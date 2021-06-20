@@ -40,22 +40,22 @@ import com.skydoves.colorpickerview.listeners.ColorPickerViewListener
  * ColorPickerPreference is a preference for persisting a chosen color by users.
  * We can show a [ColorPickerDialog] and customize the dialog and [ColorPickerView].
  */
-class ColorPickerPreference : Preference {
+open class ColorPickerPreference : Preference {
 
-  private lateinit var colorBox: View
+  protected lateinit var colorBox: View
   private lateinit var preferenceDialog: AlertDialog
   private lateinit var preferenceColorPickerView: ColorPickerView
   var preferenceColorListener: ColorPickerViewListener? = null
 
-  private var defaultColor: Int = Color.BLACK
-  private var cornerRadius: Int = 0
-  private var paletteDrawable: Drawable? = null
-  private var selectorDrawable: Drawable? = null
-  private var title: String? = null
-  private var positive: String? = null
-  private var negative: String? = null
-  private var isAttachAlphaSlideBar = true
-  private var isAttachBrightnessSlideBar = true
+  protected var defaultColor: Int = Color.BLACK
+  protected var cornerRadius: Int = 0
+  protected var paletteDrawable: Drawable? = null
+  protected var selectorDrawable: Drawable? = null
+  protected var title: String? = null
+  protected var positive: String? = null
+  protected var negative: String? = null
+  protected var isAttachAlphaSlideBar = true
+  protected var isAttachBrightnessSlideBar = true
 
   constructor(context: Context) : super(context)
 
