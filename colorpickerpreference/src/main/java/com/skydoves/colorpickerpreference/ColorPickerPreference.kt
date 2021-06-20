@@ -49,6 +49,8 @@ open class ColorPickerPreference : Preference {
 
   protected var defaultColor: Int = Color.BLACK
   protected var cornerRadius: Int = 0
+  protected var outlineColor: Int = Color.BLACK
+  protected var outlineSize: Int = 0
   protected var paletteDrawable: Drawable? = null
   protected var selectorDrawable: Drawable? = null
   protected var title: String? = null
@@ -97,6 +99,10 @@ open class ColorPickerPreference : Preference {
       typedArray.getColor(R.styleable.ColorPickerPreference_default_color, defaultColor)
     cornerRadius =
       typedArray.getDimensionPixelSize(R.styleable.ColorPickerPreference_preference_colorBox_radius, cornerRadius)
+    outlineColor =
+      typedArray.getColor(R.styleable.ColorPickerPreference_outline_color, outlineColor)
+    outlineSize =
+      typedArray.getDimensionPixelSize(R.styleable.ColorPickerPreference_outline_size, outlineSize)
     paletteDrawable = typedArray.getDrawable(R.styleable.ColorPickerPreference_preference_palette)
     selectorDrawable = typedArray.getDrawable(R.styleable.ColorPickerPreference_preference_selector)
     title = typedArray.getString(R.styleable.ColorPickerPreference_preference_dialog_title)
@@ -165,6 +171,7 @@ open class ColorPickerPreference : Preference {
           preferenceManager.sharedPreferences.getInt(key, this@ColorPickerPreference.defaultColor)
         }
       )
+      setStroke(outlineSize, this@ColorPickerPreference.outlineColor)
     }
   }
 

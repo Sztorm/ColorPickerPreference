@@ -18,6 +18,8 @@
     android:summary="changes toolbar color"
     android:title="Toolbar Color"
     app:default_color="@color/colorPrimary"
+    app:outline_color="@color/md_white_1000"
+    app:outline_size="2dp"
     app:iconSpaceReserved="false"
     app:preference_attachAlphaSlideBar="false"
     app:preference_attachBrightnessSlideBar="true"
