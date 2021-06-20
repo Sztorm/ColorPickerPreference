@@ -14,11 +14,12 @@
  * limitations under the License.
  */
 
-@file:Suppress("unused")
+@file:Suppress("unused", "MemberVisibilityCanBePrivate")
 
 package com.skydoves.colorpickerpreference
 
 import android.content.Context
+import android.content.DialogInterface
 import android.content.res.TypedArray
 import android.graphics.Color
 import android.graphics.drawable.Drawable
@@ -41,10 +42,9 @@ import com.skydoves.colorpickerview.listeners.ColorPickerViewListener
  * We can show a [ColorPickerDialog] and customize the dialog and [ColorPickerView].
  */
 open class ColorPickerPreference : Preference {
-
   protected lateinit var colorBox: View
-  private lateinit var preferenceDialog: AlertDialog
-  private lateinit var preferenceColorPickerView: ColorPickerView
+  protected lateinit var mPreferenceDialog: AlertDialog
+  protected lateinit var preferenceColorPickerView: ColorPickerView
   var preferenceColorListener: ColorPickerViewListener? = null
 
   protected var defaultColor: Int = Color.BLACK
@@ -58,6 +58,19 @@ open class ColorPickerPreference : Preference {
   protected var negative: String? = null
   protected var isAttachAlphaSlideBar = true
   protected var isAttachBrightnessSlideBar = true
+  protected val dialogPositiveButtonColorEnvelopeListener = ColorEnvelopeListener { envelope, _ ->
+    if (colorBox.background is GradientDrawable) {
+      (colorBox.background as GradientDrawable).setColor(envelope.color)
+      notifyColorChanged(envelope)
+      preferenceManager
+        .sharedPreferences.edit {
+          putInt(key, envelope.color)
+        }
+    }
+  }
+  protected val dialogNegativeButtonClickListener = DialogInterface.OnClickListener {
+      dialogInterface, _ -> dialogInterface.dismiss()
+  }
 
   constructor(context: Context) : super(context)
 
@@ -122,22 +135,10 @@ open class ColorPickerPreference : Preference {
 
   private fun onInit() {
     widgetLayoutResource = R.layout.layout_colorpicker_preference
-    preferenceDialog = ColorPickerDialog.Builder(context).apply {
+    mPreferenceDialog = ColorPickerDialog.Builder(context).apply {
       setTitle(title)
-      setPositiveButton(
-        positive,
-        ColorEnvelopeListener { envelope, _ ->
-          if (colorBox.background is GradientDrawable) {
-            (colorBox.background as GradientDrawable).setColor(envelope.color)
-            notifyColorChanged(envelope)
-            preferenceManager
-              .sharedPreferences.edit {
-                putInt(key, envelope.color)
-              }
-          }
-        }
-      )
-      setNegativeButton(negative) { dialogInterface, _ -> dialogInterface.dismiss() }
+      setPositiveButton(positive, dialogPositiveButtonColorEnvelopeListener)
+      setNegativeButton(negative, dialogNegativeButtonClickListener)
       attachAlphaSlideBar(isAttachAlphaSlideBar)
       attachBrightnessSlideBar(isAttachBrightnessSlideBar)
       this@ColorPickerPreference.preferenceColorPickerView = this.colorPickerView.apply {
@@ -149,7 +150,7 @@ open class ColorPickerPreference : Preference {
     }.create()
   }
 
-  private fun notifyColorChanged(envelope: ColorEnvelope) {
+  protected fun notifyColorChanged(envelope: ColorEnvelope) {
     preferenceColorListener?.let {
       if (it is ColorListener) {
         it.onColorSelected(envelope.color, true)
@@ -177,11 +178,11 @@ open class ColorPickerPreference : Preference {
 
   override fun onClick() {
     super.onClick()
-    preferenceDialog.show()
+    mPreferenceDialog.show()
   }
 
   /** gets an [AlertDialog] that created by preferences. */
-  fun getPreferenceDialog(): AlertDialog = preferenceDialog
+  fun getPreferenceDialog(): AlertDialog = mPreferenceDialog
 
   /** gets a [ColorPickerView] that created by preferences. */
   fun getColorPickerView(): ColorPickerView = preferenceColorPickerView
